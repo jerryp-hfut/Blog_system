@@ -1,0 +1,16 @@
+com\example\blog\entity\Tag.class
+com\example\blog\repository\CategoryRepository.class
+com\example\blog\controller\CategoryController.class
+com\example\blog\controller\UserController.class
+com\example\blog\repository\CommentRepository.class
+com\example\blog\repository\BlogRepository.class
+com\example\blog\entity\Blog.class
+com\example\blog\controller\BlogController.class
+com\example\blog\repository\TagRepository.class
+com\example\blog\entity\User.class
+com\example\blog\entity\Category.class
+com\example\blog\BlogBackendApplication.class
+com\example\blog\controller\CommentController.class
+com\example\blog\entity\Comment.class
+com\example\blog\controller\TagController.class
+com\example\blog\repository\UserRepository.class

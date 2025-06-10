@@ -1,0 +1,122 @@
+<script setup>
+import { ref } from 'vue'
+import api from '../api'
+import { useRouter } from 'vue-router'
+
+const username = ref('')
+const password = ref('')
+const errorMsg = ref('')
+const router = useRouter()
+
+const login = async () => {
+  errorMsg.value = ''
+  try {
+    const res = await api.post('/users/login', { username: username.value, password: password.value })
+    localStorage.setItem('token', res.data.token)
+    localStorage.setItem('user', JSON.stringify(res.data.user))
+    window.location.reload() // 登录后强制刷新页面，确保导航栏和用户信息立即更新
+    // router.push('/') // 注释掉原跳转
+  } catch (e) {
+    errorMsg.value = e?.response?.data?.message || '登录失败'
+  }
+}
+</script>
+
+<template>
+  <div class="auth-container">
+    <h2>登录</h2>
+    <form class="auth-form" @submit.prevent="login">
+      <div class="form-group">
+        <label>用户名：</label>
+        <input v-model="username" required class="input" placeholder="请输入用户名" />
+      </div>
+      <div class="form-group">
+        <label>密码：</label>
+        <input v-model="password" type="password" required class="input" placeholder="请输入密码" />
+      </div>
+      <button type="submit" class="submit-btn">登录</button>
+      <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
+    </form>
+    <div class="auth-link">还没有账号？<router-link to="/register">注册</router-link></div>
+  </div>
+</template>
+
+<style scoped>
+.auth-container {
+  max-width: 400px;
+  margin: 60px auto 0 auto;
+  background: rgba(255,255,255,0.92);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+  padding: 36px 32px 28px 32px;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+h2 {
+  text-align: center;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 28px;
+  letter-spacing: 1px;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+label {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 2px;
+}
+.input {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 16px;
+  background: #fafbfc;
+  transition: border 0.2s;
+  outline: none;
+}
+.input:focus {
+  border: 1.5px solid #007aff;
+  background: #fff;
+}
+.submit-btn {
+  background: linear-gradient(90deg,#007aff 0%,#34c759 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 0;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px 0 rgba(0,122,255,0.08);
+  transition: background 0.2s;
+}
+.submit-btn:hover {
+  background: linear-gradient(90deg,#005ecb 0%,#28a745 100%);
+}
+.error-msg {
+  color: #ff3b30;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 15px;
+}
+.auth-link {
+  text-align: center;
+  margin-top: 18px;
+  color: #555;
+  font-size: 15px;
+}
+.auth-link a {
+  color: #007aff;
+  text-decoration: underline;
+  margin-left: 4px;
+}
+</style>
