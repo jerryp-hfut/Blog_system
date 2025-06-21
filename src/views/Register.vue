@@ -50,7 +50,7 @@ const register = async () => {
 .auth-container {
   max-width: 400px;
   margin: 60px auto 0 auto;
-  background: rgba(255,255,255,0.92);
+  background: #f7fafd;
   border-radius: 18px;
   box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
   padding: 36px 32px 28px 32px;
@@ -58,8 +58,8 @@ const register = async () => {
 }
 h2 {
   text-align: center;
-  font-weight: 600;
-  color: #222;
+  font-weight: 700;
+  color: #1a2233;
   margin-bottom: 28px;
   letter-spacing: 1px;
 }
@@ -75,21 +75,23 @@ h2 {
 }
 label {
   font-size: 15px;
-  color: #555;
+  color: #3a3a3a;
   margin-bottom: 2px;
 }
 .input {
-  border: 1px solid #e0e0e0;
+  border: 1.5px solid #e0e6ed;
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 16px;
-  background: #fafbfc;
-  transition: border 0.2s;
+  background: #f4f7fa;
+  color: #222;
+  transition: border 0.2s, box-shadow 0.2s;
   outline: none;
 }
 .input:focus {
   border: 1.5px solid #007aff;
   background: #fff;
+  box-shadow: 0 0 0 2px #e3f0ff;
 }
 .submit-btn {
   background: linear-gradient(90deg,#007aff 0%,#34c759 100%);
@@ -98,19 +100,36 @@ label {
   border-radius: 12px;
   padding: 12px 0;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   margin-top: 10px;
   box-shadow: 0 2px 8px 0 rgba(0,122,255,0.08);
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 .submit-btn:hover {
   background: linear-gradient(90deg,#005ecb 0%,#28a745 100%);
+  box-shadow: 0 4px 16px 0 rgba(0,122,255,0.12);
 }
 .error-msg {
   color: #ff3b30;
   margin-top: 10px;
   text-align: center;
   font-size: 15px;
+  font-weight: 600;
+}
+.auth-link {
+  text-align: center;
+  margin-top: 18px;
+  color: #555;
+  font-size: 15px;
+}
+.auth-link a {
+  color: #007aff;
+  text-decoration: underline;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+.auth-link a:hover {
+  color: #005ecb;
 }
 </style>

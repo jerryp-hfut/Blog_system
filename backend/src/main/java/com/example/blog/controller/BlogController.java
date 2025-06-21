@@ -39,6 +39,15 @@ public class BlogController {
         if (blog.getUser() == null || blog.getUser().getId() == null) {
             throw new RuntimeException("未登录或用户信息缺失");
         }
+        if (blog.getTitle() == null || blog.getTitle().trim().isEmpty()) {
+            throw new RuntimeException("标题不能为空");
+        }
+        if (blog.getContent() == null || blog.getContent().trim().isEmpty()) {
+            throw new RuntimeException("内容不能为空");
+        }
+        if (blog.getCategory() == null || blog.getCategory().getId() == null) {
+            throw new RuntimeException("分类不能为空");
+        }
         // 校验用户是否存在
         var user = userRepository.findById(blog.getUser().getId()).orElseThrow(() -> new RuntimeException("用户不存在"));
         blog.setUser(user);
@@ -52,7 +61,11 @@ public class BlogController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBlog(@PathVariable Integer id) {
+    public void deleteBlog(@PathVariable Integer id, @RequestHeader(value = "User-Name") String username) {
+        var user = userRepository.findByUsername(username != null ? username.trim() : null);
+        if (user == null || !"admin".equals(user.getRole())) {
+            throw new RuntimeException("只有管理员可以删除所有用户的博客");
+        }
         blogRepository.deleteById(id);
     }
 

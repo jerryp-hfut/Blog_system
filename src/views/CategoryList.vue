@@ -5,6 +5,7 @@ import api from '../api'
 const categories = ref([])
 const name = ref('')
 const errorMsg = ref('')
+const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 
 const fetchCategories = async () => {
   const res = await api.get('/categories')
@@ -23,6 +24,16 @@ const addCategory = async () => {
   }
 }
 
+const delCategory = async (id) => {
+  errorMsg.value = ''
+  try {
+    await api.delete(`/categories/${id}`, { headers: { 'User-Name': user?.username || '' } })
+    fetchCategories()
+  } catch (e) {
+    errorMsg.value = e?.response?.data?.message || '删除失败'
+  }
+}
+
 onMounted(fetchCategories)
 </script>
 
@@ -32,6 +43,7 @@ onMounted(fetchCategories)
     <div class="cat-list">
       <div v-for="cat in categories" :key="cat.id" class="cat-card">
         <span class="cat-name">{{ cat.name }}</span>
+        <button v-if="user && user.role === 'admin'" @click="delCategory(cat.id)" class="del-btn">删除</button>
       </div>
     </div>
     <form class="cat-form" @submit.prevent="addCategory">
@@ -72,9 +84,24 @@ h2 {
   font-size: 15px;
   color: #007aff;
   border: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .cat-name {
   font-weight: 500;
+}
+.del-btn {
+  background: none;
+  border: none;
+  color: #ff3b30;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+.del-btn:hover {
+  text-decoration: underline;
 }
 .cat-form {
   display: flex;
@@ -90,6 +117,7 @@ h2 {
   flex: 1;
   outline: none;
   transition: border 0.2s;
+  color: #222;
 }
 .input:focus {
   border: 1.5px solid #007aff;

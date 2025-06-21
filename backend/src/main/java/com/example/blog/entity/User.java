@@ -29,4 +29,7 @@ public class User {
 
     @Column(name = "role", length = 20)
     private String role = "user"; // "admin" or "user"
+
+    @Column(name = "salt", length = 64)
+    private String salt;
 }

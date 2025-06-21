@@ -2,6 +2,7 @@ package com.example.blog.controller;
 
 import com.example.blog.entity.Tag;
 import com.example.blog.repository.TagRepository;
+import com.example.blog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.List;
 public class TagController {
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     public List<Tag> getAllTags() {

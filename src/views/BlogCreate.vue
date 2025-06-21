@@ -101,8 +101,14 @@ onMounted(fetchMeta)
         <label>标签：</label>
         <div class="tags">
           <span v-for="tag in tags" :key="tag.id" class="tag-item">
-            <input type="checkbox" :value="tag.id" v-model="tagIds" :id="'tag-' + tag.id" />
-            <label :for="'tag-' + tag.id">{{ tag.name }}</label>
+            <input
+              type="checkbox"
+              :value="tag.id"
+              v-model="tagIds"
+              :id="`tag-${tag.id}`"
+              :aria-label="`Select ${tag.name} tag`"
+            />
+            <label :for="`tag-${tag.id}`">{{ tag.name }}</label>
           </span>
         </div>
         <div class="custom-tag-row">
@@ -149,6 +155,7 @@ label {
   margin-bottom: 2px;
 }
 .input {
+  color: #222;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   padding: 10px 14px;

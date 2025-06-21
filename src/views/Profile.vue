@@ -1,12 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import api from '../api'
 import { useRouter } from 'vue-router'
+import * as echarts from 'echarts'
 
 const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 const blogs = ref([])
 const errorMsg = ref('')
 const router = useRouter()
+const chart = ref(null)
 
 const fetchMyBlogs = async () => {
   if (!user.value) return
@@ -17,7 +19,7 @@ const fetchMyBlogs = async () => {
 const delBlog = async (id) => {
   if (!confirm('确定要删除这篇博客吗？')) return
   try {
-    await api.delete(`/blogs/${id}`)
+    await api.delete(`/blogs/${id}`, { headers: { 'User-Name': user.value.username } })
     fetchMyBlogs()
   } catch (e) {
     errorMsg.value = e?.response?.data?.message || '删除失败'
@@ -100,8 +102,36 @@ async function resetPassword() {
     resetMsgColor.value = 'red'
   }
 }
+function renderChart() {
+  // 统计每个分类下的博客数量
+  const categoryMap = {}
+  blogs.value.forEach(blog => {
+    const cat = blog.category?.name || '未分类'
+    categoryMap[cat] = (categoryMap[cat] || 0) + 1
+  })
+  const categories = Object.keys(categoryMap)
+  const counts = Object.values(categoryMap)
+  if (chart.value) {
+    const myChart = echarts.init(chart.value)
+    myChart.setOption({
+      title: { text: '我的各分类博客数量' },
+      tooltip: {},
+      xAxis: { data: categories },
+      yAxis: {},
+      series: [{
+        name: '博客数量',
+        type: 'bar',
+        data: counts,
+        itemStyle: { color: '#34c759' }
+      }]
+    })
+  }
+}
 
-onMounted(fetchMyBlogs)
+onMounted(() => {
+  fetchMyBlogs().then(renderChart)
+})
+watch(blogs, renderChart)
 </script>
 
 <template>
@@ -137,6 +167,7 @@ onMounted(fetchMyBlogs)
       </div>
     </div>
     <h3 style="margin-top:32px;">我的博客</h3>
+    <div ref="chart" style="width:100%;max-width:600px;height:320px;margin:0 auto 32px auto;"></div>
     <div v-if="blogs.length === 0" class="empty">暂无博客</div>
     <div class="blog-list">
       <div v-for="blog in blogs" :key="blog.id" class="blog-card">
@@ -145,7 +176,7 @@ onMounted(fetchMyBlogs)
           <span class="time">🕒 {{ blog.createTime?.replace('T',' ') }}</span>
         </div>
         <div class="blog-content">{{ blog.content.slice(0, 80) }}{{ blog.content.length > 80 ? '...' : '' }}</div>
-        <button class="del-btn" @click="delBlog(blog.id)">删除</button>
+        <button v-if="user && user.role === 'admin'" class="del-btn" @click="delBlog(blog.id)">删除</button>
       </div>
     </div>
     <div v-if="errorMsg" class="error-msg">{{ errorMsg }}</div>
@@ -331,5 +362,14 @@ h2 {
   margin-top: 10px;
   text-align: center;
   font-size: 15px;
+}
+.chart-container {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.input {
+  color: #222;
 }
 </style>

@@ -5,6 +5,7 @@ import api from '../api'
 const tags = ref([])
 const name = ref('')
 const errorMsg = ref('')
+const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
 
 const fetchTags = async () => {
   const res = await api.get('/tags')
@@ -23,6 +24,16 @@ const addTag = async () => {
   }
 }
 
+const delTag = async (id) => {
+  errorMsg.value = ''
+  try {
+    await api.delete(`/tags/${id}`, { headers: { 'User-Name': user?.username || '' } })
+    fetchTags()
+  } catch (e) {
+    errorMsg.value = e?.response?.data?.message || '删除失败'
+  }
+}
+
 onMounted(fetchTags)
 </script>
 
@@ -32,6 +43,7 @@ onMounted(fetchTags)
     <div class="tag-list">
       <div v-for="tag in tags" :key="tag.id" class="tag-card">
         <span class="tag-name">{{ tag.name }}</span>
+        <button v-if="user && user.role === 'admin'" class="del-btn" @click="delTag(tag.id)">删除</button>
       </div>
     </div>
     <form class="tag-form" @submit.prevent="addTag">
@@ -72,6 +84,9 @@ h2 {
   font-size: 15px;
   color: #007aff;
   border: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .tag-name {
   font-weight: 500;
@@ -90,6 +105,7 @@ h2 {
   flex: 1;
   outline: none;
   transition: border 0.2s;
+  color: #222;
 }
 .input:focus {
   border: 1.5px solid #007aff;
@@ -109,6 +125,16 @@ h2 {
 }
 .add-btn:hover {
   background: linear-gradient(90deg,#005ecb 0%,#28a745 100%);
+}
+.del-btn {
+  background: transparent;
+  color: #ff3b30;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+.del-btn:hover {
+  text-decoration: underline;
 }
 .error-msg {
   color: #ff3b30;

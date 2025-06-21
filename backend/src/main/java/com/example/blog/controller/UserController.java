@@ -14,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/users")
@@ -47,13 +50,34 @@ public class UserController {
         userRepository.deleteById(id);
     }
 
+    // 工具方法：生成随机盐
+    private String generateSalt() {
+        byte[] salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
+    }
+
+    // 工具方法：哈希(密码+盐)
+    private String hashPassword(String password, String salt) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt.getBytes());
+            byte[] hashed = md.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hashed);
+        } catch (Exception e) {
+            throw new RuntimeException("密码哈希失败", e);
+        }
+    }
+
     @PostMapping("/register")
     public User register(@RequestBody User user) {
-        // 简单校验，实际应加密码加密
         if (userRepository.findByUsername(user.getUsername()) != null) {
             throw new RuntimeException("用户名已存在");
         }
-        // 新注册用户默认普通用户
+        String salt = generateSalt();
+        String hashedPwd = hashPassword(user.getPassword(), salt);
+        user.setSalt(salt);
+        user.setPassword(hashedPwd);
         user.setRole("user");
         return userRepository.save(user);
     }
@@ -63,7 +87,11 @@ public class UserController {
         String username = req.get("username");
         String password = req.get("password");
         User user = userRepository.findByUsername(username);
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null) {
+            throw new RuntimeException("用户名或密码错误");
+        }
+        String hashedPwd = hashPassword(password, user.getSalt());
+        if (!user.getPassword().equals(hashedPwd)) {
             throw new RuntimeException("用户名或密码错误");
         }
         // 指定“潘序”为管理员
@@ -71,7 +99,6 @@ public class UserController {
             user.setRole("admin");
             userRepository.save(user);
         }
-        // 生成简单token（实际应用JWT）
         String token = UUID.randomUUID().toString();
         Map<String, Object> res = new HashMap<>();
         res.put("token", token);

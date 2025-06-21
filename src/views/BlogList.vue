@@ -143,6 +143,10 @@ onMounted(() => {
   transition: border 0.2s;
   outline: none;
 }
+.input, .input option {
+  color: #222;
+  background: #fafbfc;
+}
 .input:focus {
   border: 1.5px solid #007aff;
   background: #fff;
@@ -197,6 +201,7 @@ onMounted(() => {
   color: #444;
   font-size: 15px;
   margin-top: 2px;
+  text-align: left;
 }
 .empty {
   text-align: center;

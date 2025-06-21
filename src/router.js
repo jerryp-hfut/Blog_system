@@ -8,6 +8,7 @@ import CommentList from './views/CommentList.vue'
 import Login from './views/Login.vue'
 import Register from './views/Register.vue'
 import Profile from './views/Profile.vue'
+import CategoryStats from './views/CategoryStats.vue'
 
 const routes = [
   { path: '/', component: BlogList },
@@ -18,7 +19,8 @@ const routes = [
   // { path: '/comments', component: CommentList, meta: { admin: true } }, // 注释掉评论管理页面
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/profile', component: Profile }
+  { path: '/profile', component: Profile },
+  { path: '/category-stats', component: CategoryStats, meta: { admin: true } }
 ]
 
 const router = createRouter({

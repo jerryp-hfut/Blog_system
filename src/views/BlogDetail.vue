@@ -68,7 +68,7 @@ onMounted(() => {
       <span v-if="user && user.username" style="margin-left:2em;cursor:pointer;color:#007aff;user-select:none;" @click="likeBlog">👍 {{ blog.likes || 0 }}</span>
       <span v-else style="margin-left:2em;color:#bbb;">👍 {{ blog.likes || 0 }}</span>
     </div>
-    <div style="margin: 1em 0;">{{ blog.content }}</div>
+    <div style="margin: 1em 0; text-align: left;">{{ blog.content }}</div>
     <div>
       <strong>标签：</strong>
       <span v-for="tag in blog.tags || []" :key="tag.id" style="margin-right: 8px;">{{ tag.name }}</span>
